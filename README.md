@@ -1,7 +1,7 @@
 # Usual setup
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 
 source .venv/bin/activate
 
@@ -16,6 +16,13 @@ Create "app.py"
 from flask import Flask, request
 
 app = Flask(__name__)
+```
+
+Create a .flaskenv file and add the following
+
+```
+FLASK_APP=app
+FLASK_DEBUG=1
 ```
 
 # Run the server
