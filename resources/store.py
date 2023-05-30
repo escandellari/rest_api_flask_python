@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
 from models import StoreModel
-from schemas import StoreSchema
+from schemas import StoreSchema, UpdateStoreSchema
 
 # Blueprint, used by flask to split api into multiple segments
 blp = Blueprint("stores", __name__, description="Operation on stores")
@@ -15,23 +15,38 @@ blp = Blueprint("stores", __name__, description="Operation on stores")
 class Store(MethodView):
     @blp.response(200, StoreSchema)
     def get(self, store_id):
-        store = Store.query.get_or_404(store_id)
+        store = StoreModel.query.get_or_404(store_id)
         return store
 
     def delete(self, store_id):
-        store = Store.query.get_or_404(store_id)
-        raise NotImplementedError("Deleting not implemented yet")
+        store = StoreModel.query.get_or_404(store_id)
+        db.session.delete(store)
+        db.session.commit()
+        return {"message": "Store deleted"}, 200
 
-    def put(self, store_id):
-        store = Store.query.get_or_404(store_id)
-        raise NotImplementedError("Updating not implemented yet")
+    @blp.arguments(UpdateStoreSchema)
+    @blp.response(200, StoreSchema)
+    def put(self, store_data, store_id):
+        store = StoreModel.query.get(store_id)
+        if store:
+            store.name = store_data["name"]
+        else:
+            store = StoreModel(id=store_id, **store_data)
+
+        db.session.add(store)
+        db.session.commit()
+
+        return store
+
+        # store = Store.query.get_or_404(store_id)
+        # raise NotImplementedError("Updating not implemented yet")
 
 
 @blp.route("/store")
 class StoreList(MethodView):
     @blp.response(200, StoreSchema(many=True))
     def get(self):
-        return stores.values()
+        return StoreModel.query.all()
 
     @blp.arguments(StoreSchema)
     @blp.response(200, StoreSchema)
