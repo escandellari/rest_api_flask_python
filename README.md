@@ -83,3 +83,9 @@ Checkout the api in
 
 - Marshmallow - validation
 - Blueprint - split api into multiple segments
+
+
+# Deployment
+Webservice runs on render.com
+
+Database runs on elephantSQL.com
