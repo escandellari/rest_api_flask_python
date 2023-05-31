@@ -63,11 +63,15 @@ docker run -p 8000:5000 flask-smorest-api
 
 -v -> volume (where to find the code)
 
+-d -> detach from terminal (run in background)
+
+sh -c "command" -> will override the command in the docker file
+
 ```bash
-docker run -p 8000:5000 -w /app -v "${pwd}:/app" <image_name>
+docker run -dp 8000:5000 -w /app -v "${pwd}:/app" <image_name> sh -c "flask run --host 0.0.0.0"
 
 Example:
-docker run -p 8000:5000 -w /app -v "$(pwd):/app" flask-smorest-api
+docker run -p 8000:5000 -w /app -v "$(pwd):/app" flask-smorest-api sh -c "flask run --host 0.0.0.0"
 ```
 
 # API
