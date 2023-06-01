@@ -1,5 +1,6 @@
 alembic==1.11.1
 apispec==6.3.0
+async-timeout==4.0.2
 blinker==1.6.2
 certifi==2023.5.7
 charset-normalizer==3.1.0
@@ -23,7 +24,9 @@ passlib==1.7.4
 psycopg2-binary==2.9.6
 PyJWT==2.7.0
 python-dotenv==1.0.0
+redis==4.5.5
 requests==2.31.0
+rq==1.15.0
 SQLAlchemy==2.0.15
 typing_extensions==4.6.2
 urllib3==1.26.6
