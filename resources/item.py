@@ -5,9 +5,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
 from models import ItemModel
-from schemas import ItemSchema, UpdateItemSchema
+from schemas import ItemSchema, ItemUpdateSchema
 
-blp = Blueprint("items", __name__, description="Operation on items")
+blp = Blueprint("Items", __name__, description="Operations on items")
 
 
 @blp.route("/item/<int:item_id>")
@@ -22,14 +22,14 @@ class Item(MethodView):
     def delete(self, item_id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):
-            abort(401, message="Admin privileges required to delete")
+            abort(401, message="Admin privilege required.")
+
         item = ItemModel.query.get_or_404(item_id)
         db.session.delete(item)
         db.session.commit()
         return {"message": "Item deleted."}
 
-    @jwt_required()
-    @blp.arguments(UpdateItemSchema)
+    @blp.arguments(ItemUpdateSchema)
     @blp.response(200, ItemSchema)
     def put(self, item_data, item_id):
         item = ItemModel.query.get(item_id)
@@ -62,6 +62,6 @@ class ItemList(MethodView):
             db.session.add(item)
             db.session.commit()
         except SQLAlchemyError:
-            abort(500, message="An error as occurred while inserting the item.")
+            abort(500, message="An error occurred whilte inserting the item.")
 
         return item

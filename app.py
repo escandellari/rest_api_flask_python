@@ -1,11 +1,11 @@
 import os
-import secrets
 
 from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+
 
 from db import db
 from blocklist import BLOCKLIST
@@ -51,9 +51,21 @@ def create_app(db_url=None):
             401,
         )
 
+    @jwt.needs_fresh_token_loader
+    def token_not_fresh_callback(jwt_header, jwt_payload):
+        return (
+            jsonify(
+                {
+                    "description": "The token is not fresh.",
+                    "error": "fresh_token_required",
+                }
+            ),
+            401,
+        )
+
     @jwt.additional_claims_loader
     def add_claims_to_jwt(identity):
-        # This should be improved
+        # Look in the database and see whether the user is an admin
         if identity == 1:
             return {"is_admin": True}
         return {"is_admin": False}
@@ -84,17 +96,9 @@ def create_app(db_url=None):
             401,
         )
 
-    @jwt.needs_fresh_token_loader
-    def token_not_fresh_callback(jwt_header, jwt_payload):
-        return (
-            jsonify(
-                {
-                    "description": "The token is not fresh.",
-                    "error": "fresh_token_required",
-                }
-            ),
-            401,
-        )
+    # @app.before_first_request
+    # def create_tables():
+    #     db.create_all()
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)
